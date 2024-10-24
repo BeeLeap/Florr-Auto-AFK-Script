@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Florr.io Auto AFK Mobile
+// @name         Florr.io Auto AFK
 // @namespace    https://beeeeedev.github.io
 // @version      1.2.0
-// @description  Simplified Auto AFK in florr.io for mobile with anti-detect feature
+// @description  Simplified Auto AFK in florr.io
 // @author       Beeeee
 // @match        https://florr.io/
 // @icon         https://florr.io/favicon.ico
