@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Florr.io Auto AFK Mobile
 // @namespace    http://tampermonkey.net/
-// @version      1.2.1
-// @description  Simplified Auto AFK in florr.io for mobile with anti-detect feature
+// @version      1.3.0
+// @description  Simplified Auto AFK in florr.io for mobile with adjustable log panel
 // @author       Beeeee
 // @match        https://florr.io/
 // @icon         https://florr.io/favicon.ico
@@ -13,11 +13,33 @@
 
 let AFKinterval = 0;
 let AFKing = false;
-let checkInterval = 5000; // 每5秒检查一次
+let checkInterval = 5000;
 let afkButton;
+
+const logPanel = document.createElement('div');
+Object.assign(logPanel.style, {
+    position: "fixed",
+    top: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "300px",
+    height: "100px",
+    overflowY: "scroll",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    color: "white",
+    fontSize: "12px",
+    zIndex: "10000",
+    padding: "5px",
+    display: "none"
+});
+document.body.appendChild(logPanel);
 
 const log = (message) => {
     console.log(message);
+    const logMessage = document.createElement('div');
+    logMessage.textContent = message;
+    logPanel.appendChild(logMessage);
+    logPanel.scrollTop = logPanel.scrollHeight;
 };
 
 const clickAFKCheckButton = () => {
@@ -31,12 +53,13 @@ const clickAFKCheckButton = () => {
 };
 
 const startAFK = () => {
-    log("Start AFK called. Current AFK state: " + AFKing);
+    log(`Start AFK called. Current AFK state: ${AFKing}`);
     if (AFKing) {
         clearInterval(AFKinterval);
         clearInterval(afkCheckInterval);
         AFKing = false;
         afkButton.innerHTML = "Start AFK";
+        logPanel.style.display = "none";
         log("AFK Disabled!");
     } else {
         AFKinterval = setInterval(() => {
@@ -47,37 +70,35 @@ const startAFK = () => {
             }, Math.random() * 100);
         }, 60000);
 
-        afkCheckInterval = setInterval(clickAFKCheckButton, checkInterval); // 定时检查AFK检查按钮
+        afkCheckInterval = setInterval(clickAFKCheckButton, checkInterval);
 
         AFKing = true;
         afkButton.innerHTML = "Stop AFK";
+        logPanel.style.display = "block";
         log("AFK Enabled!");
     }
 };
 
 const ensureAFKState = () => {
-    if (AFKing) {
-        afkButton.innerHTML = "Stop AFK";
-    } else {
-        afkButton.innerHTML = "Start AFK";
-    }
+    afkButton.innerHTML = AFKing ? "Stop AFK" : "Start AFK";
 };
 
 const initializeScript = () => {
     log("Initializing script...");
 
     afkButton = document.createElement('button');
-    afkButton.id = "afkStartButton";
-    afkButton.style.position = "fixed";
-    afkButton.style.bottom = "50%";
-    afkButton.style.right = "10%";
-    afkButton.style.background = "#00000077";
-    afkButton.style.color = "#FFFFFF";
-    afkButton.style.fontSize = "14px";
-    afkButton.style.padding = "10px";
-    afkButton.style.border = "none";
-    afkButton.style.borderRadius = "5px";
-    afkButton.style.cursor = "pointer";
+    Object.assign(afkButton.style, {
+        position: "fixed",
+        bottom: "50%",
+        right: "10%",
+        background: "#00000077",
+        color: "#FFFFFF",
+        fontSize: "14px",
+        padding: "10px",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer"
+    });
     afkButton.innerHTML = "Start AFK";
     afkButton.onclick = () => {
         if (!afkButton.disabled) {
@@ -89,7 +110,7 @@ const initializeScript = () => {
     document.body.appendChild(afkButton);
     log("Button added to DOM");
 
-    setInterval(ensureAFKState, 1000); // 每秒检查一次状态，确保按钮状态正确
+    setInterval(ensureAFKState, 1000);
 };
 
 window.addEventListener('load', initializeScript);
