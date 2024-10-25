@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Florr.io Auto AFK
-// @namespace    https://beeeeedev.github.io
-// @version      1.2.0
-// @description  Simplified Auto AFK in florr.io
+// @name         Florr.io Auto AFK Mobile
+// @namespace    http://tampermonkey.net/
+// @version      1.2.1
+// @description  Simplified Auto AFK in florr.io for mobile with anti-detect feature
 // @author       Beeeee
 // @match        https://florr.io/
 // @icon         https://florr.io/favicon.ico
@@ -55,8 +55,16 @@ const startAFK = () => {
     }
 };
 
-window.onload = () => {
-    log("Florr.io Auto AFK script loaded");
+const ensureAFKState = () => {
+    if (AFKing) {
+        afkButton.innerHTML = "Stop AFK";
+    } else {
+        afkButton.innerHTML = "Start AFK";
+    }
+};
+
+const initializeScript = () => {
+    log("Initializing script...");
 
     afkButton = document.createElement('button');
     afkButton.id = "afkStartButton";
@@ -80,4 +88,8 @@ window.onload = () => {
     };
     document.body.appendChild(afkButton);
     log("Button added to DOM");
+
+    setInterval(ensureAFKState, 1000); // 每秒检查一次状态，确保按钮状态正确
 };
+
+window.addEventListener('load', initializeScript);
